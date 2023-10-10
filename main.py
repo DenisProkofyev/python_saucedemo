@@ -127,3 +127,31 @@ def test_add_item_to_cart_from_card():
     assert cart_item_name == item_name and cart_item_quantity == quantity, "The cart does not work properly"
 
     driver.quit()
+
+
+# Удаление товара из корзины через карточку товара
+def test_remove_item_from_cart_using_its_card():
+    driver.get(URL)
+    auth_data()
+
+    bolt_t_shirt_button = driver.find_element(By.XPATH, "//*[contains(text(), 'Sauce Labs Bolt T-Shirt')]")
+    bolt_t_shirt_button.click()
+
+    bolt_t_shirt_to_cart_button = driver.find_element(By.ID, "add-to-cart-sauce-labs-bolt-t-shirt")
+    bolt_t_shirt_to_cart_button.click()
+
+    bolt_t_shirt_out_of_cart_button = driver.find_element(By.ID, "remove-sauce-labs-bolt-t-shirt")
+    time.sleep(2)
+
+    shopping_cart_badge = driver.find_element(By.CLASS_NAME, "shopping_cart_badge")
+    if shopping_cart_badge.text == "1":
+        bolt_t_shirt_out_of_cart_button.click()
+    else:
+        print("You added nothing to cart")
+    try:
+        WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.CLASS_NAME, "shopping_cart_badge")))
+        not_found = False
+    except:
+        not_found = True
+    time.sleep(2)
+    assert not_found, f"The {bolt_t_shirt_button.text} was not removed"
