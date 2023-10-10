@@ -1,5 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 import time
 
 driver = webdriver.Chrome()
@@ -9,8 +12,6 @@ URL = "https://www.saucedemo.com/"
 
 # Авторизация
 # Авторизация, используя корректные данные (standard_user, secret_sauce)
-
-
 def auth_data():
     username_field = driver.find_element(By.ID, "user-name")
     username_field.send_keys("standard_user")
@@ -62,8 +63,8 @@ def test_add_item_from_catalogue():
     item_name = "Sauce Labs Fleece Jacket"
     quantity = "1"
 
-    fleece_jacket_to_card_button = driver.find_element(By.ID, "add-to-cart-sauce-labs-fleece-jacket")
-    fleece_jacket_to_card_button.click()
+    fleece_jacket_to_cart_button = driver.find_element(By.ID, "add-to-cart-sauce-labs-fleece-jacket")
+    fleece_jacket_to_cart_button.click()
 
     shopping_cart_button = driver.find_element(By.CLASS_NAME, "shopping_cart_container")
     shopping_cart_button.click()
@@ -74,3 +75,29 @@ def test_add_item_from_catalogue():
     assert cart_item_name == item_name and cart_item_quantity == quantity, "The cart does not work properly"
 
     driver.quit()
+
+
+# Удаление товара из корзины через корзину
+def test_remove_item_from_cart_using_cart():
+    driver.get(URL)
+    auth_data()
+
+    fleece_jacket_to_cart_button = driver.find_element(By.ID, "add-to-cart-sauce-labs-fleece-jacket")
+    fleece_jacket_to_cart_button.click()
+
+    shopping_cart_button = driver.find_element(By.CLASS_NAME, "shopping_cart_container")
+    shopping_cart_button.click()
+    time.sleep(3)
+
+    cart_item_name = driver.find_element(By.CSS_SELECTOR, ".cart_item_label .inventory_item_name")
+
+    remove_fleece_jacket_button = driver.find_element(By.ID, "remove-sauce-labs-fleece-jacket")
+    remove_fleece_jacket_button.click()
+
+    try:
+        WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.ID, "remove-sauce-labs-fleece-jacket")))
+        not_found = False
+    except:
+        not_found = True
+    time.sleep(3)
+    assert not_found, f"The {cart_item_name.text} was not removed"
