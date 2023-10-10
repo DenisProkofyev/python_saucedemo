@@ -119,6 +119,7 @@ def test_add_item_to_cart_from_card():
 
     shopping_cart_button = driver.find_element(By.CLASS_NAME, "shopping_cart_container")
     shopping_cart_button.click()
+
     time.sleep(3)
 
     cart_item_name = driver.find_element(By.CSS_SELECTOR, ".cart_item_label .inventory_item_name").text
