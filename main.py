@@ -101,3 +101,28 @@ def test_remove_item_from_cart_using_cart():
         not_found = True
     time.sleep(3)
     assert not_found, f"The {cart_item_name.text} was not removed"
+
+
+# Добавление товара в корзину из карточки товара
+def test_add_item_to_cart_from_card():
+    driver.get(URL)
+    auth_data()
+
+    bolt_t_shirt_button = driver.find_element(By.XPATH, "//*[contains(text(), 'Sauce Labs Bolt T-Shirt')]")
+    bolt_t_shirt_button.click()
+
+    item_name = "Sauce Labs Bolt T-Shirt"
+    quantity = "1"
+
+    bolt_t_shirt_to_cart_button = driver.find_element(By.ID, "add-to-cart-sauce-labs-bolt-t-shirt")
+    bolt_t_shirt_to_cart_button.click()
+
+    shopping_cart_button = driver.find_element(By.CLASS_NAME, "shopping_cart_container")
+    shopping_cart_button.click()
+    time.sleep(3)
+
+    cart_item_name = driver.find_element(By.CSS_SELECTOR, ".cart_item_label .inventory_item_name").text
+    cart_item_quantity = driver.find_element(By.XPATH, "//div[3]/*[contains(@class, 'cart_quantity')]").text
+    assert cart_item_name == item_name and cart_item_quantity == quantity, "The cart does not work properly"
+
+    driver.quit()
